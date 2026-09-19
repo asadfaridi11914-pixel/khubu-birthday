@@ -1,0 +1,296 @@
+/* =========================================================
+   Colors & fonts — change these to restyle the whole page
+   ========================================================= */
+:root {
+  --paper: #fffaf3;      /* letter / photo frame color */
+  --plum: #3b0d3f;       /* dark text color */
+  --sun: #ffc93c;        /* yellow */
+  --sky: #7cc8ff;        /* blue */
+  --display: "Fredoka", "Trebuchet MS", system-ui, sans-serif;
+  --hand: "Caveat", "Segoe Script", "Bradley Hand", cursive;
+}
+
+/* Each slide picks a theme; the page background fades between them */
+body {
+  --bg: #e6dcff;      /* lavender background */
+  --ink: #3b0d3f;
+  --accent: #6a35c9;  /* deeper purple for the name, dots, progress bar */
+}
+body[data-theme="sun"]  { --bg: #fff0b8; }
+body[data-theme="sky"]  { --bg: #cfeaff; }
+body[data-theme="plum"] { --bg: #3b0d3f; --ink: #fffaf3; --accent: #c9b3ff; }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+[hidden] { display: none !important; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--display);
+  line-height: 1.5;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  transition: background-color .6s;
+}
+
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+.hand { font-family: var(--hand); font-size: 1.7rem; color: var(--accent); }
+
+h1 {
+  font-size: clamp(2.5rem, 11vw, 4.8rem);
+  line-height: 1.05;
+  font-weight: 700;
+}
+h1 .name { color: var(--accent); }
+
+h2 { font-size: clamp(1.7rem, 6vw, 2.4rem); line-height: 1.15; }
+
+/* ---------- Button ---------- */
+.btn {
+  background: #6a35c9;
+  color: #fff;
+  border: 0;
+  border-radius: 999px;
+  padding: 14px 30px;
+  font-weight: 600;
+  font-size: 1.15rem;
+  box-shadow: 0 5px 0 #3f1c8a;
+  transition: transform .12s, box-shadow .12s;
+  margin-top: 18px;
+}
+.btn:active { transform: translateY(4px); box-shadow: 0 1px 0 #3f1c8a; }
+
+/* ---------- Balloons ---------- */
+.balloons { position: fixed; inset: 0; overflow: hidden; z-index: 0; pointer-events: none; }
+.balloon {
+  position: absolute;
+  bottom: -140px;
+  width: 46px;
+  height: 58px;
+  border-radius: 50% 50% 48% 48%;
+  opacity: .55;
+  animation: floatUp linear infinite;
+}
+.balloon::after {              /* the string */
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: 2px;
+  height: 46px;
+  background: currentColor;
+  opacity: .5;
+}
+@keyframes floatUp {
+  from { transform: translateY(0) translateX(0); }
+  50%  { transform: translateY(-60vh) translateX(18px); }
+  to   { transform: translateY(-125vh) translateX(-10px); }
+}
+
+/* ---------- Cover ---------- */
+.cover {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+}
+.cover h1 { margin: 6px 0 10px; }
+.cover-hint { font-family: var(--hand); font-size: 1.5rem; margin-top: 16px; }
+
+/* ---------- Stage & slides ---------- */
+.stage {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.progress { height: 6px; background: rgba(59, 13, 63, .12); flex: none; }
+.progress-bar { height: 100%; width: 0; background: var(--accent); transition: width .4s; }
+
+.music-btn {
+  position: absolute;
+  top: 16px;
+  right: 14px;
+  z-index: 5;
+  background: transparent;
+  border: 2px solid currentColor;
+  border-radius: 999px;
+  padding: 4px 14px;
+  font-size: .95rem;
+}
+
+.slides { position: relative; flex: 1; min-height: 0; }
+
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  padding: 58px 20px 12px;
+  overflow-y: auto;
+  text-align: center;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(50px);
+  transition: opacity .45s, transform .45s, visibility 0s .45s;
+}
+.slide.before { transform: translateX(-50px); }
+.slide.active {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition: opacity .45s, transform .45s;
+}
+.slide .inner {
+  margin: auto;            /* centers, but still scrolls safely on small screens */
+  width: 100%;
+  max-width: 640px;
+}
+
+.slide .hint { font-family: var(--hand); font-size: 1.6rem; margin-top: 22px; }
+
+/* ---------- Photos (polaroid style) ---------- */
+.slide h2 { margin-bottom: 20px; }
+
+.polaroid {
+  display: inline-block;
+  background: var(--paper);
+  color: var(--plum);
+  border: 3px solid var(--plum);
+  padding: 12px 12px 6px;
+  box-shadow: 7px 7px 0 var(--sun);
+  max-width: 100%;
+}
+.polaroid img,
+.polaroid .ph {
+  display: block;
+  width: min(290px, 68vw);
+  aspect-ratio: 4 / 5;
+  max-height: 46vh;
+  object-fit: cover;
+  border: 2px solid var(--plum);
+}
+.polaroid .ph {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: #f3d7e6;
+  font-size: 1rem;
+}
+.polaroid figcaption {
+  font-family: var(--hand);
+  font-size: 1.6rem;
+  line-height: 1.15;
+  padding: 10px 4px 6px;
+}
+
+/* Collage: several small polaroids together */
+.collage { display: flex; flex-wrap: wrap; justify-content: center; gap: 18px; }
+.collage .polaroid img,
+.collage .polaroid .ph { width: min(170px, 38vw); max-height: 30vh; }
+.collage .polaroid { padding: 8px 8px 2px; box-shadow: 5px 5px 0 var(--sky); }
+.collage .polaroid figcaption { font-size: 1.25rem; padding: 6px 2px 4px; }
+
+/* ---------- List slide ---------- */
+.list { list-style: none; display: grid; gap: 12px; margin-top: 6px; }
+.list li {
+  background: var(--paper);
+  color: var(--plum);
+  border: 3px solid var(--plum);
+  border-radius: 999px;
+  padding: 10px 20px;
+  font-weight: 600;
+  font-size: 1.15rem;
+  box-shadow: 4px 4px 0 var(--accent);
+}
+
+/* ---------- Letter ---------- */
+.paper {
+  background: var(--paper);
+  color: var(--plum);
+  border: 3px solid var(--plum);
+  border-radius: 6px;
+  padding: 26px 24px 28px;
+  box-shadow: 8px 8px 0 var(--sun);
+  text-align: left;
+}
+.paper p { font-family: var(--hand); font-size: 1.55rem; line-height: 1.3; margin-bottom: 12px; }
+.paper .sign { text-align: right; color: #6a35c9; font-weight: 700; font-size: 1.9rem; margin: 14px 0 0; }
+
+/* ---------- Cake ---------- */
+.cake-wrap { width: min(300px, 70vw); margin: 0 auto; }
+.cake { width: 100%; height: auto; display: block; }
+
+.flame { transform-origin: center bottom; transform-box: fill-box; transition: opacity .35s, transform .35s; }
+.flame.lit { animation: flicker .9s ease-in-out infinite alternate; }
+.cake.out .flame { opacity: 0; transform: scale(.2); animation: none; }
+@keyframes flicker {
+  from { transform: scale(1) rotate(-3deg); }
+  to   { transform: scale(1.12, .94) rotate(3deg); }
+}
+
+.wish-note {
+  font-family: var(--hand);
+  font-size: 1.8rem;
+  margin-top: 14px;
+  min-height: 2.4rem;
+  opacity: 0;
+  transition: opacity .6s;
+}
+.wish-note.show { opacity: 1; }
+
+/* ---------- Final slide ---------- */
+.end-buttons { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
+
+/* ---------- Bottom controls ---------- */
+.controls {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 10px 16px 18px;
+}
+.nav-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 3px solid currentColor;
+  background: transparent;
+  font-size: 1.9rem;
+  line-height: 1;
+  padding-bottom: 4px;
+}
+.nav-btn:disabled { opacity: .3; cursor: default; }
+
+.dots { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; max-width: 60vw; }
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  background: transparent;
+  padding: 0;
+}
+.dot.active { background: var(--accent); border-color: var(--accent); }
+
+/* ---------- Confetti ---------- */
+#confetti { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 30; }
+
+/* ---------- Accessibility ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .balloons { display: none; }
+  .flame.lit { animation: none; }
+  .slide, .slide.active, .progress-bar, .wish-note, body { transition: none; }
+}
